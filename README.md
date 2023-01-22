@@ -8,4 +8,4 @@
 
 ## Как вешать на cron
 
-`0 3 * * * /usr/bin/php -f <DOCUMENT_ROOT>/bitrix/modules/bitrix.xscan/atl-scan-cli.php --monitorio-key=<SITE_APIKEY_MONITORIO>`
+`0 3 * * * /usr/bin/php <DOCUMENT_ROOT>/bitrix/modules/bitrix.xscan/atl-scan-cli.php --monitorio-key=<SITE_APIKEY_MONITORIO>`
