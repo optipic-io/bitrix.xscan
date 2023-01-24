@@ -35,7 +35,7 @@ var_dump($scaner->doc_root);
 $scaner->scan_log =  $scaner->doc_root. '/bitrix/modules/bitrix.xscan/file_list_cli.txt';
 $scaner->start_time = PHP_INT_MAX;
 
-//$scaner->clean(); // new scan
+$scaner->clean(); // new scan
 $scaner->CheckEvents();
 $scaner->CheckAgents();
 $scaner->Count_total($start_path);
