@@ -38,10 +38,10 @@ class XScanResultTable extends \Bitrix\Main\Entity\DataManager
 }
 
 
-class XScanResults extends EO_XScanResult_Collection
+class XScanResults /*extends EO_XScanResult_Collection*/ // ATLANT fix (class not found)
 {
 }
 
-class XScanResult extends EO_XScanResult
+class XScanResult /*extends EO_XScanResult*/ // ATLANT fix (class not found)
 {
 }
