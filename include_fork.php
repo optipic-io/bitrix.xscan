@@ -1201,7 +1201,7 @@ class CBitrixXscanFork
         $res = [];
         $config = self::genConfig(['params' => True, 'assigned' => $extract]);
         foreach ($nodes['evals'] as $node) {
-            [$flag, $comment] = $this->CheckArg($node->expr, $vars, $config);
+            list($flag, $comment) = $this->CheckArg($node->expr, $vars, $config);
             if ($flag) {
                 $node->setAttribute('comment', $comment);
                 $res[] = $node;
@@ -1407,7 +1407,7 @@ class CBitrixXscanFork
 
                     $arg = isset($node->args[0]) ? $node->args[0] : False;
 
-                    [$flag, $comment] = $this->CheckArg($arg->value, $vars, $config);
+                    list($flag, $comment) = $this->CheckArg($arg->value, $vars, $config);
                     if ($flag) {
                         $res[] = $node;
                         $node->setAttribute('comment', $comment);
@@ -1431,7 +1431,7 @@ class CBitrixXscanFork
             $flag = False;
             $comment = '';
 
-            [$flag, $comment] = $this->CheckArg($arg->value, $vars, $config);
+            list($flag, $comment) = $this->CheckArg($arg->value, $vars, $config);
             if ($flag) {
                 $node->setAttribute('comment', $comment);
 
@@ -1459,7 +1459,7 @@ class CBitrixXscanFork
                 $flag = True;
                 $comment = 'wrapper';
             } else {
-                [$flag, $comment] = $this->CheckArg($node->expr, $vars, $config);
+                list($flag, $comment) = $this->CheckArg($node->expr, $vars, $config);
 //                    $flag = $flag || $nodeFinder->findFirst($node->expr,
 //                            function (Node $node) use (&$vars) {
 //                                return $node instanceof Node\Expr\Variable && is_string($node->name) && $node->name && (isset($vars['request'][$node->name]) || isset($vars['crypted'][$node->name]));
@@ -1525,7 +1525,7 @@ class CBitrixXscanFork
                 $var = is_string($node->name) ? '$' . $node->name : $this->pprinter->prettyPrintExpr($node->name);
                 $name = substr($var, 1);
 
-                [$flag, $comment] = $this->CheckArg($node->name, $vars, $config);
+                list($flag, $comment) = $this->CheckArg($node->name, $vars, $config);
                 if (!$flag) {
                     $flag = $nodeFinder->findFirst($node->args,
                         function (Node $node) {
@@ -1540,7 +1540,7 @@ class CBitrixXscanFork
 
                 if (!$flag) {
                     foreach ($node->args as $arg) {
-                        [$flag, $comment] = $this->CheckArg($arg->value, $vars, $config);
+                        list($flag, $comment) = $this->CheckArg($arg->value, $vars, $config);
                         if ($flag) {
                             $comment = $comment;
                             break;
@@ -1575,12 +1575,12 @@ class CBitrixXscanFork
             if ($node->name instanceof Node\Expr\ArrayDimFetch) {
                 $res[] = $node;
 
-                [$flag, $comment] = $this->CheckArg($node->name, $vars, $config);
+                list($flag, $comment) = $this->CheckArg($node->name, $vars, $config);
 
 
                 if (!$flag) {
                     foreach ($node->args as $arg) {
-                        [$flag, $comment] = $this->CheckArg($arg->value, $vars, $config);
+                        list($flag, $comment) = $this->CheckArg($arg->value, $vars, $config);
                         if ($flag) {
                             break;
                         }
@@ -1604,7 +1604,7 @@ class CBitrixXscanFork
             if ($node->name instanceof Node\Expr\FuncCall) {
                 $res[] = $node;
 
-                [$flag, $comment] = $this->CheckArg($node->name, $vars, $config);
+                list($flag, $comment) = $this->CheckArg($node->name, $vars, $config);
                 if ($flag) {
                     $node->setAttribute('comment', $comment);
                 }
@@ -1620,7 +1620,7 @@ class CBitrixXscanFork
             if ($node->name instanceof Node\Scalar\String_ || $node->name instanceof Node\Expr\BinaryOp) {
                 $res[] = $node;
 
-                [$flag, $comment] = $this->CheckArg($node->name, $vars, $config);
+                list($flag, $comment) = $this->CheckArg($node->name, $vars, $config);
                 if ($flag) {
                     $node->setAttribute('comment', $comment);
                 }
@@ -1677,7 +1677,7 @@ class CBitrixXscanFork
 
                 $arg = $node->args[$i]->value;
 
-                [$ret, $comment] = $this->CheckArg($arg, $vars, $config);
+                list($ret, $comment) = $this->CheckArg($arg, $vars, $config);
             }
 
             if ($ret && $comment) {
@@ -1764,7 +1764,7 @@ class CBitrixXscanFork
 
                 $ret = "$name(" . implode(",", $args) . ")";
 
-                [$a, $b] = self::checkString($ret);
+                list($a, $b) = self::checkString($ret);
                 $ret = $a ? $b : '';
                 unset($args);
             }
@@ -1826,7 +1826,7 @@ class CBitrixXscanFork
             $ret = in_array($name, self::$evals, True) || in_array($name, ['getenv'], True) || ($config['crypted'] && in_array($name, self::$cryptors, True));
             if (!$ret) {
                 foreach ($arg->args as $argv) {
-                    [$ret, $comment] = $this->CheckArg($argv->value, $vars, $config);
+                    list($ret, $comment) = $this->CheckArg($argv->value, $vars, $config);
                     if ($ret) {
                         break;
                     }
@@ -1845,13 +1845,13 @@ class CBitrixXscanFork
             $func = $arg->toLowerString();
             $ret = preg_match('/(' . implode('|', self::$evals) . '|call_user_func|getenv)/i', $func);
         } elseif ($arg instanceof Node\Expr\BinaryOp\Concat || $arg instanceof Node\Expr\BinaryOp\Coalesce) {
-            [$a, $b] = $this->CheckArg($arg->left, $vars, $config);
+            list($a, $b) = $this->CheckArg($arg->left, $vars, $config);
             if ($a) {
-                [$ret, $comment] = [$a, $b];
+                list($ret, $comment) = [$a, $b];
             } else {
-                [$a, $b] = $this->CheckArg($arg->right, $vars, $config);
+                list($a, $b) = $this->CheckArg($arg->right, $vars, $config);
                 if ($a) {
-                    [$ret, $comment] = [$a, $b];
+                    list($ret, $comment) = [$a, $b];
                 } elseif ($config['concat']) {
                     $comment = 'strange concatination';
                     $ret = true;
@@ -1859,20 +1859,20 @@ class CBitrixXscanFork
             }
         } elseif ($arg instanceof Node\Scalar\Encapsed) {
             foreach ($arg->parts as $part) {
-                [$a, $b] = $this->CheckArg($part, $vars, $config);
+                list($a, $b) = $this->CheckArg($part, $vars, $config);
                 if ($a) {
-                    [$ret, $comment] = [$a, $b];
+                    list($ret, $comment) = [$a, $b];
                 }
             }
         } elseif ($arg instanceof Node\Expr\Ternary) {
 
-            [$a, $b] = $this->CheckArg($arg->if, $vars, $config);
+            list($a, $b) = $this->CheckArg($arg->if, $vars, $config);
             if ($a) {
-                [$ret, $comment] = [$a, $b];
+                list($ret, $comment) = [$a, $b];
             } else {
-                [$a, $b] = $this->CheckArg($arg->else, $vars, $config);
+                list($a, $b) = $this->CheckArg($arg->else, $vars, $config);
                 if ($a) {
-                    [$ret, $comment] = [$a, $b];
+                    list($ret, $comment) = [$a, $b];
                 }
             }
 
@@ -1885,7 +1885,7 @@ class CBitrixXscanFork
 
 //            var_dump($val);
 
-            [$ret, $comment] = self::checkString($val);
+            list($ret, $comment) = self::checkString($val);
         }
 
         return [$ret, $comment];
