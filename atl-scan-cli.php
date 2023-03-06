@@ -68,7 +68,9 @@ if ($fp) {
 }
 
 if (filesize($productionLog)>0 && !empty($cliParams['monitorio-key'])) {
-    $httpClient = new HttpClient();
+    $httpClient = new HttpClient([
+        "disableSslVerification" => true,
+    ]);
     
     $httpClient->post('https://monitorio.io/api/notifications/add/', json_encode([
         'key' => $cliParams['monitorio-key'],
