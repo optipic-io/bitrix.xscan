@@ -35,6 +35,9 @@ var_dump($scaner->doc_root);
 $scaner->scan_log =  $scaner->doc_root. '/bitrix/modules/bitrix.xscan/file_list_cli.txt';
 $scaner->start_time = PHP_INT_MAX;
 
+file_put_contents($scaner->scan_log, '');
+file_put_contents($scaner->doc_root. '/bitrix/modules/bitrix.xscan/file_list.txt', '');
+
 $scaner->clean(); // new scan
 $scaner->CheckEvents();
 $scaner->CheckAgents();
@@ -68,9 +71,7 @@ if ($fp) {
 }
 
 if (filesize($productionLog)>0 && !empty($cliParams['monitorio-key'])) {
-    $httpClient = new HttpClient([
-        "disableSslVerification" => true,
-    ]);
+    $httpClient = new HttpClient();
     
     $httpClient->post('https://monitorio.io/api/notifications/add/', json_encode([
         'key' => $cliParams['monitorio-key'],
@@ -82,3 +83,8 @@ if (filesize($productionLog)>0 && !empty($cliParams['monitorio-key'])) {
 }
 
 echo "DONE\n";
+
+$connection = \Bitrix\Main\Application::getConnection();
+$connection->disconnect();
+
+exit;
